@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <标题>乒乓球游戏</标题>
+  <style>
+    body {
+      背景: #222;
+      显示: flex;
+      justify-content: center;
+      align-items: center;
+      height: 99vh;
+      margin: 0;
+      字体族: Arial, 无衬线字体;
+    }
+    #gameContainer {
+      位置: 相对;
+    }
+    #pongCanvas {
+      背景: #111;
+      显示: 块级;
+      边距: 0 auto;
+      边框: 2像素 实线#fff;
+    }
+    #分数 {
+      位置: 绝对;
+      顶部: 20像素;
+      左: 0;
+      宽度: 100%;
+      文本对齐: 居中;
+      字体大小: 28像素;
+      颜色: #fff;
+      z-index: 5;
+      letter-spacing: 0.5em;
+      user-select: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="gameContainer">
+    <div id="score">0 : 0</div>
+    <canvas id="pongCanvas" width="600" height="400"></canvas>
+  </div>
+  <script>
+    const canvas = document.getElementById("pongCanvas");
+    const ctx = canvas.getContext("2d");
+
+    // Game Variables
+    const paddleWidth = 12, paddleHeight = 70, ballSize = 14;
+    let playerY = (canvas.height - paddleHeight) / 2;
+    let computerY = (canvas.height - paddleHeight) / 2;
+    let playerScore = 0, computerScore = 0;
+    let ballX = canvas.width / 2 - ballSize / 2;
+    let ballY = canvas.height / 2 - ballSize / 2;
+    let ballSpeedX = 4, ballSpeedY = 3;
+    let upPressed = false, downPressed = false;
+
+    // Update Score Display
+    function updateScore() {
+      document.getElementById("score").textContent = playerScore + " : " + computerScore;
+    }
+
+    // Draw everything
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Draw Net
+      ctx.setLineDash([10, 10]);
+      ctx.strokeStyle = '#fff';
+      ctx.beginPath();
+      ctx.moveTo(canvas.width/2, 0);
+      ctx.lineTo(canvas.width/2, canvas.height);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Draw paddles and ball
+      ctx.fillStyle = "#fff";
+      // Left paddle
+      ctx.fillRect(10, playerY, paddleWidth, paddleHeight);
+      // Right paddle
+      ctx.fillRect(canvas.width - paddleWidth - 10, computerY, paddleWidth, paddleHeight);
+      // Ball
+      ctx.beginPath();
+      ctx.arc(ballX + ballSize/2, ballY + ballSize/2, ballSize/2, 0, Math.PI*2);
+      ctx.fill();
+    }
+
+    // Move computer paddle (simple AI)
+    function moveComputer() {
+      let center = computerY + paddleHeight / 2;
+      if (center < ballY + ballSize/2 - 8) {
+        computerY += 3;
+      } else if (center > ballY + ballSize/2 + 8) {
+        computerY -= 3;
+      }
+      // Clamp to canvas
+      computerY = Math.max(0, Math.min(canvas.height - paddleHeight, computerY));
+    }
+
+    // Game Logic
+    function update() {
+      // Move paddles
+      if (upPressed) playerY -= 5;
+      if (downPressed) playerY += 5;
+      // Clamp player paddle
+      playerY = Math.max(0, Math.min(canvas.height - paddleHeight, playerY));
+
+      moveComputer();
+
+      // Move ball
+      ballX += ballSpeedX;
+      ballY += ballSpeedY;
+
+      // Top and bottom wall collision
+      if (ballY <= 0 || ballY + ballSize >= canvas.height) {
+        ballSpeedY = -ballSpeedY;
+        ballY = ballY <= 0 ? 0 : canvas.height - ballSize;
+      }
+
+      // Paddle collision (player)
+      if (ballX <= 10 + paddleWidth &&
+          ballY + ballSize > playerY &&
+          ballY < playerY + paddleHeight) {
+        ballSpeedX = -ballSpeedX;
+        // Add a bit of "english" depending on where it hit the paddle
+        let hitPos = ((ballY + ballSize/2) - (playerY + paddleHeight/2)) / (paddleHeight/2);
+        ballSpeedY += hitPos * 2;
+        ballX = 10 + paddleWidth; // 防止卡住
+      }
+      // Paddle collision (computer)
+      else if (ballX + ballSize >= canvas.width - paddleWidth - 10 &&
+               ballY + ballSize > computerY &&
+               ballY < computerY + paddleHeight) {
+        ballSpeedX = -ballSpeedX;
+        let hitPos = ((ballY + ballSize/2) - (computerY + paddleHeight/2)) / (paddleHeight/2);
+        ballSpeedY += hitPos * 2;
+        ballX = canvas.width - paddleWidth - 10 - ballSize;
+      }
+
+      // Score check
+      if (ballX < 0) {
+        computerScore += 1;
+        resetBall();
+      }
+      if (ballX + ballSize > canvas.width) {
+        playerScore += 1;
+        resetBall();
+      }
+
+      updateScore();
+      draw();
+      requestAnimationFrame(update);
+    }
+
+    function resetBall() {
+      ballX = canvas.width / 2 - ballSize / 2;
+      ballY = (Math.random() * (canvas.height - ballSize));
+      ballSpeedX = (Math.random() > 0.5 ? 1 : -1) * 4;
+      ballSpeedY = (Math.random() - 0.5) * 6;
+    }
+
+    // Keyboard controls
+    window.addEventListener('keydown', (e) => {
+      if (e.key === "ArrowUp") upPressed = true;
+      if (e.key === "ArrowDown") downPressed = true;
+    });
+    window.addEventListener('keyup', (e) => {
+      if (e.key === "ArrowUp") upPressed = false;
+      if (e.key === "ArrowDown") downPressed = false;
+    });
+
+    // Mouse controls
+    canvas.addEventListener('mousemove', (e) => {
+      const rect = canvas.getBoundingClientRect();
+      const mouseY = e.clientY - rect.top;
+      playerY = mouseY - paddleHeight/2;
+      playerY = Math.max(0, Math.min(canvas.height - paddleHeight, playerY));
+    });
+
+    // Start game
+    updateScore();
+    draw();
+    resetBall();
+    requestAnimationFrame(update);
+  </script>
+</body>
+</html>
