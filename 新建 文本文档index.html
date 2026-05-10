@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>我的个人介绍</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "微软雅黑", sans-serif;
+            background: #f0f2f5;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        /* 头像照片 */
+        .avatar {
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            display: block;
+            margin: 0 auto 20px;
+            object-fit: cover;
+            border: 5px solid #fff;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #222;
+            margin-bottom: 10px;
+        }
+
+        .info {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        /* 个人详情 */
+        .detail {
+            margin: 15px 0;
+            font-size: 16px;
+            color: #333;
+        }
+
+        .detail span {
+            font-weight: bold;
+            color: #165DFF;
+        }
+
+        /* 联系方式按钮 */
+        .contact {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .contact a {
+            display: inline-block;
+            margin: 8px;
+            padding: 10px 20px;
+            background: #165DFF;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- 👇 这里换成你的照片链接 -->
+        <img class="avatar" src="https://picsum.photos/300" alt="我的照片">
+
+        <h1>刘通成</h1>
+        <p class="info">一句简单的自我介绍<br>比如：心态决定一切</p>
+
+        <div class="detail">
+            🎂 <span>年龄：</span> 33
+        </div>
+        <div class="detail">
+            🏠 <span>城市：</span> 四川.成都
+        </div>
+        <div class="detail">
+            🎓 <span>职业/学生：</span> 客服经理
+        </div>
+        <div class="detail">
+            ✨ <span>爱好：</span> 游泳
+        </div>
+        <div class="detail">
+            💬 <span>性格：</span> ENTJ
+        </div>
+
+        <!-- 联系方式 -->
+        <div class="contact">
+            <a href="https://weixin.qq.com/">微信</a>969397447
+            <a href="mailto:你的邮箱">邮箱</a>969397447@qq.com
+            <a href="tel:你的电话">电话</a>15388258692
+        </div>
+    </div>
+</body>
+</html>
